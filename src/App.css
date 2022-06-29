@@ -59,3 +59,13 @@ thead th{
   font-weight: bold !important;
   width: 5px;
 }
+tbody {
+  font-size: 16px;
+}
+.fileIcon {
+  font-size: 25px;
+  color: #349cca;
+}
+.weatherCard {
+  
+}

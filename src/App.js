@@ -1,14 +1,32 @@
 import './App.css';
 import { Card, Button, Modal, Table } from 'antd';
 import { useState, useEffect } from 'react';
-import { ReloadOutlined } from '@ant-design/icons';
+import {
+  ReloadOutlined,
+  createFromIconfontCN,
+  ExportOutlined,
+  ProfileOutlined,
+} from '@ant-design/icons';
+import useFetch from './Hooks/useFetch';
+import CwbModel from './components/CwdModel';
+import React, { createContext } from 'react';
 
-// CWB-A32AD779-6858-483D-888E-A6FCC549A7A9
+export const AppContext = createContext();
+const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
 
 function App() {
   const [visible, setVisible] = useState(false);
   const [dataList, setDataList] = useState([]);
   const selectionType = useState('checkbox');
+  const IconFont = createFromIconfontCN({
+    scriptUrl: '//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js',
+  });
+
+  const [weatherElement, axiosData] = useFetch({
+    authorizationKey: AUTHORIZATION_KEY,
+  });
+  // console.log(weatherElement);
+
   //表格標頭
   const columns = [
     {
@@ -25,26 +43,24 @@ function App() {
     },
     {
       title: '地區',
-      dataIndex: 'place',
+      dataIndex: 'town',
       className: 'titleColor',
     },
     {
       title: '觀測時間',
       dataIndex: 'time',
-      defaultSortOrder: 'descend',
       className: 'titleColor',
-      sorter: (a, b) => a.place - b.place,
+      sorter: (a, b) => a.town - b.town,
     },
     {
       title: '天氣',
-      dataIndex: 'weter',
+      dataIndex: 'weather',
       className: 'titleColor',
     },
     {
       title: '溫度',
       dataIndex: 'temperature',
       className: 'titleColor',
-      defaultSortOrder: 'descend',
       sorter: (a, b) => a.temperature - b.temperature,
     },
     {
@@ -59,42 +75,24 @@ function App() {
     },
   ];
   //表格內資料
-  const data = [
+  const formData = [
     {
       key: '1',
-      name: '天龍國',
-      weter: '假資料',
-    },
-    {
-      key: '2',
-      name: '發財市',
-      weter: '假資料',
+      name: weatherElement.city,
+      town: weatherElement.town,
+      time: weatherElement.obsTime,
+      weather: weatherElement.weather,
+      temperature: weatherElement.temperature,
+      windy: weatherElement.windSpeed + 'm/h',
+      info: <ProfileOutlined className="fileIcon" />,
     },
   ];
 
   const onChange = (filters, sorter, extra) => {
     console.log('params', filters, sorter, extra);
   };
-  /*
-  // 接收API
-  async function getAllData() {
-    const url = `https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-A32AD779-6858-483D-888E-A6FCC549A7A9`;
-    const request = new Request(url, {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'appliaction/json',
-      }),
-    });
-    const response = await fetch(request);
-    const data = await response.json();
-    setDataList(data.locationName);
-  }
-  useEffect(() => {
-    getAllData();
-  }, []);
-  console.log(dataList);
-*/
+
+  //CheckBox
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       console.log(
@@ -111,6 +109,7 @@ function App() {
 
   return (
     <>
+      {/* <AppContext.Provider value={visible}> */}
       <div className="background">
         <div className="box">
           <Card
@@ -123,7 +122,11 @@ function App() {
             <div className="top">
               <h1 className="titleName">即時天氣</h1>
               <div className="btn">
-                <Button type="primary" className="btnStyle">
+                <Button
+                  type="primary"
+                  className="btnStyle"
+                  icon={<ExportOutlined />}
+                >
                   Export
                 </Button>
                 <Button
@@ -141,28 +144,25 @@ function App() {
                 ...rowSelection,
               }}
               columns={columns}
-              dataSource={data}
+              dataSource={formData}
               onChange={onChange}
               pagination={false}
             />
           </Card>
         </div>
-        <Button type="primary" onClick={() => setVisible(true)}>
-          1
-        </Button>
+        <Button onClick={() => setVisible(true)}>1</Button>
         <Modal
-          title="Modal"
           centered
           visible={visible}
-          onOk={() => setVisible(false)}
           onCancel={() => setVisible(false)}
-          width={600}
-        >
-          <p>some contents...</p>
-          <p>some contents...</p>
-          <p>some contents...</p>
-        </Modal>
+          width={700}
+          footer={null}
+          className="weatherCard"
+          bodyStyle={{ padding: 200 }}
+        ></Modal>
+        {/* <CwbModel /> */}
       </div>
+      {/* </AppContext.Provider> */}
     </>
   );
 }
