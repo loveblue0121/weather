@@ -1,22 +1,21 @@
 import { Modal, Table } from 'antd';
 import { AppContext } from '../App';
+import './CwdModel.css';
 
 function CwbModel() {
   return (
     <>
       <AppContext.Consumer>
-        {/* <Modal
-          title="Modal"
-          centered
-          visible={visible}
-          onOk={() => setVisible(false)}
-          onCancel={() => setVisible(false)}
-          width={600}
-        >
-          <p>some contents...</p>
-          <p>some contents...</p>
-          <p>some contents...</p>
-        </Modal> */}
+        {(value) => (
+          <Modal
+            centered
+            visible={value.visible}
+            onCancel={() => value.setVisible(false)}
+            width={700}
+            footer={null}
+            className="weatherCard"
+          ></Modal>
+        )}
       </AppContext.Consumer>
     </>
   );

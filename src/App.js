@@ -9,6 +9,7 @@ import {
 import moment from 'moment';
 import React, { createContext } from 'react';
 import { CSVLink, CSVDownload } from 'react-csv';
+import CwbModel from './components/CwdModel';
 
 export const AppContext = createContext();
 const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
@@ -95,6 +96,14 @@ function App() {
     {
       title: '',
       dataIndex: 'info',
+      render: () => (
+        <>
+          <div className="tooltip" onClick={() => setVisible(true)}>
+            <ProfileOutlined className="fileIcon" />
+            <span className="tooltiptext">更多資訊</span>
+          </div>
+        </>
+      ),
     },
   ];
   /*
@@ -124,12 +133,6 @@ function App() {
         v.weatherElement[2].elementValue === '-99'
           ? '無數據'
           : v.weatherElement[2].elementValue + 'm/h',
-      info: (
-        <div className="tooltip" onClick={() => setVisible(true)}>
-          <ProfileOutlined className="fileIcon" />
-          <span className="tooltiptext">更多資訊</span>
-        </div>
-      ),
     };
   });
 
@@ -207,19 +210,15 @@ function App() {
             />
           </Card>
         </div>
-        <Modal
-          centered
-          visible={visible}
-          onCancel={() => setVisible(false)}
-          width={700}
-          footer={null}
-          className="weatherCard"
-          bodyStyle={{ padding: 200 }}
-        ></Modal>
-
-        {/* <CwbModel /> */}
+        <AppContext.Provider
+          value={{
+            visible: visible,
+            setVisible: setVisible,
+          }}
+        >
+          <CwbModel />
+        </AppContext.Provider>
       </div>
-      {/* </AppContext.Provider> */}
     </>
   );
 }
