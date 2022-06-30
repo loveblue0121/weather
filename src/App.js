@@ -3,13 +3,12 @@ import { Card, Button, Modal, Table } from 'antd';
 import { useState, useEffect } from 'react';
 import {
   ReloadOutlined,
-  createFromIconfontCN,
   ExportOutlined,
   ProfileOutlined,
 } from '@ant-design/icons';
-import useFetch from './Hooks/useFetch';
-import CwbModel from './components/CwdModel';
+import moment from 'moment';
 import React, { createContext } from 'react';
+import { CSVLink, CSVDownload } from 'react-csv';
 
 export const AppContext = createContext();
 const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
@@ -18,94 +17,142 @@ function App() {
   const [visible, setVisible] = useState(false);
   const [dataList, setDataList] = useState([]);
   const selectionType = useState('checkbox');
-  const IconFont = createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js',
-  });
+  const [isSelect, setIsSelect] = useState(false);
+  const [selectData, setSelectData] = useState([]);
+  const cityList = [
+    { text: '臺北市', value: '臺北市' },
+    { text: '新北市', value: '新北市' },
+    { text: '桃園市', value: '桃園市' },
+    { text: '臺中市', value: '臺中市' },
+    { text: '臺南市', value: '臺南市' },
+    { text: '高雄市', value: '高雄市' },
+    { text: '宜蘭縣', value: '宜蘭縣' },
+    { text: '新竹縣', value: '新竹縣' },
+    { text: '苗栗縣', value: '苗栗縣' },
+    { text: '彰化縣', value: '彰化縣' },
+    { text: '南投縣', value: '南投縣' },
+    { text: '雲林縣', value: '雲林縣' },
+    { text: '嘉義縣', value: '嘉義縣' },
+    { text: '屏東縣', value: '屏東縣' },
+    { text: '花蓮縣', value: '花蓮縣' },
+    { text: '臺東縣', value: '臺東縣' },
+    { text: '澎湖縣', value: '澎湖縣' },
+    { text: '嘉義市', value: '嘉義市' },
+    { text: '新竹市', value: '新竹市' },
+    { text: '基隆市', value: '基隆市' },
+  ];
 
-  const [weatherElement, axiosData] = useFetch({
-    authorizationKey: AUTHORIZATION_KEY,
-  });
-  // console.log(weatherElement);
+  // const [weatherElement, axiosData] = useFetch({
+  //   authorizationKey: AUTHORIZATION_KEY,
+  // });
+
+  //API
+  useEffect(() => {
+    fetch(
+      `https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=${AUTHORIZATION_KEY}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const dataListCount = data.records.location;
+        setDataList(dataListCount);
+      });
+  }, []);
 
   //表格標頭
   const columns = [
     {
       title: '縣市',
       dataIndex: 'name',
-      className: 'titleColor',
-      filters: [
-        {
-          text: 'Joe',
-          value: 'Joe',
-        },
-      ],
+      filters: cityList,
       onFilter: (value, record) => record.name.indexOf(value) === 0,
+      width: '15%',
     },
     {
       title: '地區',
       dataIndex: 'town',
-      className: 'titleColor',
+      width: '15%',
     },
     {
       title: '觀測時間',
       dataIndex: 'time',
-      className: 'titleColor',
       sorter: (a, b) => a.town - b.town,
     },
     {
       title: '天氣',
       dataIndex: 'weather',
-      className: 'titleColor',
+      width: '12%',
     },
     {
       title: '溫度',
       dataIndex: 'temperature',
-      className: 'titleColor',
       sorter: (a, b) => a.temperature - b.temperature,
     },
     {
       title: '風速',
       dataIndex: 'windy',
-      className: 'titleColor',
+      width: '10%',
     },
     {
       title: '',
       dataIndex: 'info',
-      className: 'titleColor',
     },
   ];
+  /*
+'WDSD' 風速
+'TEMP' 溫度(攝氏)
+'CITY' 縣市
+'TOWN' 鄉鎮
+'obsTime' 觀測時間
+'Weather' 天氣現象描述
+*/
   //表格內資料
-  const formData = [
-    {
-      key: '1',
-      name: weatherElement.city,
-      town: weatherElement.town,
-      time: weatherElement.obsTime,
-      weather: weatherElement.weather,
-      temperature: weatherElement.temperature,
-      windy: weatherElement.windSpeed + 'm/h',
-      info: <ProfileOutlined className="fileIcon" />,
-    },
-  ];
+  const lastData = dataList.map((v, i) => {
+    return {
+      key: i,
+      name: v.parameter[0].parameterValue,
+      town: v.parameter[2].parameterValue,
+      time: moment(v.time.obsTime).format('YYYY/MM/DD HH:mm'),
+      weather:
+        v.weatherElement[20].elementValue === '-99'
+          ? '無數據'
+          : v.weatherElement[20].elementValue,
+      temperature:
+        v.weatherElement[3].elementValue === '-99'
+          ? '無數據'
+          : Math.round(v.weatherElement[3].elementValue),
+      windy:
+        v.weatherElement[2].elementValue === '-99'
+          ? '無數據'
+          : v.weatherElement[2].elementValue + 'm/h',
+      info: (
+        <div className="tooltip" onClick={() => setVisible(true)}>
+          <ProfileOutlined className="fileIcon" />
+          <span className="tooltiptext">更多資訊</span>
+        </div>
+      ),
+    };
+  });
 
+  //CheckBox
   const onChange = (filters, sorter, extra) => {
     console.log('params', filters, sorter, extra);
   };
 
-  //CheckBox
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        'selectedRows: ',
-        selectedRows
-      );
+      setIsSelect(true);
+      setSelectData(selectedRows);
+      console.log('選擇的index:', selectedRows);
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === 'Disabled User',
       name: record.name,
     }),
   };
+  //ref
+  function reLoad() {
+    window.location.reload();
+  }
 
   return (
     <>
@@ -127,12 +174,22 @@ function App() {
                   className="btnStyle"
                   icon={<ExportOutlined />}
                 >
-                  Export
+                  {!isSelect ? (
+                    <CSVLink data={lastData} filename="weatherCsvFile">
+                      Export
+                    </CSVLink>
+                  ) : (
+                    <CSVLink data={selectData} filename="weatherCsvFile">
+                      Export
+                    </CSVLink>
+                  )}
                 </Button>
+
                 <Button
                   type="primary"
                   className="btnStyle"
                   icon={<ReloadOutlined />}
+                  onClick={() => reLoad()}
                 >
                   Refresh
                 </Button>
@@ -144,13 +201,12 @@ function App() {
                 ...rowSelection,
               }}
               columns={columns}
-              dataSource={formData}
+              dataSource={lastData}
               onChange={onChange}
               pagination={false}
             />
           </Card>
         </div>
-        <Button onClick={() => setVisible(true)}>1</Button>
         <Modal
           centered
           visible={visible}
@@ -160,6 +216,7 @@ function App() {
           className="weatherCard"
           bodyStyle={{ padding: 200 }}
         ></Modal>
+
         {/* <CwbModel /> */}
       </div>
       {/* </AppContext.Provider> */}
