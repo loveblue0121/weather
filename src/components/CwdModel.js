@@ -21,7 +21,6 @@ const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
 
 function CwbModel() {
   const [cityWeather, setCityWeather] = useState([]);
-
   //表格標題
   const columns = [
     {
@@ -74,7 +73,6 @@ function CwbModel() {
         setCityWeather(list);
       });
   }, []);
-  // console.log(cityWeather[0].weatherElement);
 
   // 表格內容
   const tbodyData = cityWeather.map((v, i) => {
@@ -105,7 +103,9 @@ function CwbModel() {
               <p>{value.city}</p>
               <p>{value.town}</p>
             </div>
-            <p className="description">多雲</p>
+
+            <p className="description">{value.weather}</p>
+
             <div className="currentWeather">
               {value.temp === '無數據' ? (
                 <div className="temperature">?</div>

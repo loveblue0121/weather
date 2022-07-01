@@ -24,6 +24,8 @@ function App() {
   const [town, setTown] = useState();
   const [temp, setTemp] = useState();
   const [wind, setwind] = useState();
+  const [weather, setWeather] = useState();
+
   const cityList = [
     { text: '臺北市', value: '臺北市' },
     { text: '新北市', value: '新北市' },
@@ -46,10 +48,6 @@ function App() {
     { text: '新竹市', value: '新竹市' },
     { text: '基隆市', value: '基隆市' },
   ];
-
-  // const [weatherElement, axiosData] = useFetch({
-  //   authorizationKey: AUTHORIZATION_KEY,
-  // });
 
   //API
   useEffect(() => {
@@ -80,7 +78,7 @@ function App() {
     {
       title: '觀測時間',
       dataIndex: 'time',
-      sorter: (a, b) => a.town - b.town,
+      sorter: (a, b) => a.time - b.time,
     },
     {
       title: '天氣',
@@ -107,10 +105,12 @@ function App() {
               className="tooltip"
               onClick={() => {
                 setVisible(true);
-                setCity(lastData[index].name);
-                setTown(lastData[index].town);
-                setTemp(lastData[index].temperature);
-                setwind(lastData[index].windy);
+                setCity(lastData[record?.key].name);
+                setTown(lastData[record?.key].town);
+                setTemp(lastData[record?.key].temperature);
+                setwind(lastData[record?.key].windy);
+                setWeather(lastData[record?.key].weather);
+                console.log('record:', record);
               }}
             >
               <ProfileOutlined className="fileIcon" />
@@ -175,7 +175,6 @@ function App() {
 
   return (
     <>
-      {/* <AppContext.Provider value={visible}> */}
       <div className="background">
         <div className="box">
           <Card
@@ -234,6 +233,7 @@ function App() {
             town: town,
             temp: temp,
             wind: wind,
+            weather: weather,
           }}
         >
           <CwbModel />
