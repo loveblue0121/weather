@@ -1,5 +1,5 @@
 import './App.css';
-import { Card, Button, Modal, Table } from 'antd';
+import { Card, Button, Table } from 'antd';
 import { useState, useEffect } from 'react';
 import {
   ReloadOutlined,
@@ -20,6 +20,10 @@ function App() {
   const selectionType = useState('checkbox');
   const [isSelect, setIsSelect] = useState(false);
   const [selectData, setSelectData] = useState([]);
+  const [city, setCity] = useState();
+  const [town, setTown] = useState();
+  const [temp, setTemp] = useState();
+  const [wind, setwind] = useState();
   const cityList = [
     { text: '臺北市', value: '臺北市' },
     { text: '新北市', value: '新北市' },
@@ -96,16 +100,28 @@ function App() {
     {
       title: '',
       dataIndex: 'info',
-      render: () => (
-        <>
-          <div className="tooltip" onClick={() => setVisible(true)}>
-            <ProfileOutlined className="fileIcon" />
-            <span className="tooltiptext">更多資訊</span>
-          </div>
-        </>
-      ),
+      render(text, record, index) {
+        return (
+          <>
+            <div
+              className="tooltip"
+              onClick={() => {
+                setVisible(true);
+                setCity(lastData[index].name);
+                setTown(lastData[index].town);
+                setTemp(lastData[index].temperature);
+                setwind(lastData[index].windy);
+              }}
+            >
+              <ProfileOutlined className="fileIcon" />
+              <span className="tooltiptext">更多資訊</span>
+            </div>
+          </>
+        );
+      },
     },
   ];
+
   /*
 'WDSD' 風速
 'TEMP' 溫度(攝氏)
@@ -132,7 +148,7 @@ function App() {
       windy:
         v.weatherElement[2].elementValue === '-99'
           ? '無數據'
-          : v.weatherElement[2].elementValue + 'm/h',
+          : Math.round(v.weatherElement[2].elementValue) / 10 + 'm/h',
     };
   });
 
@@ -214,6 +230,10 @@ function App() {
           value={{
             visible: visible,
             setVisible: setVisible,
+            city: city,
+            town: town,
+            temp: temp,
+            wind: wind,
           }}
         >
           <CwbModel />
