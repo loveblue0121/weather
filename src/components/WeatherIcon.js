@@ -40,7 +40,7 @@ function WeatherIcon(props) {
   const today = moment(new Date()).format('YYYY-MM-DD');
   const dayadd = moment(new Date(), 'YYYY-MM-DD').add(2, 'days');
   const dayAfterTomorrow = moment(dayadd).format('YYYY-MM-DD');
-  const nowTime = moment(new Date()).format('hh:mm');
+  const nowTime = moment(new Date()).format('HH:mm');
   const [time, setTime] = useState({});
 
   // 日出日沒API

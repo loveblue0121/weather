@@ -156,6 +156,7 @@ function CwbModel(props) {
               pagination={false}
               className="modalTable"
             />
+            <div className="space"></div>
           </Modal>
         )}
       </AppContext.Consumer>

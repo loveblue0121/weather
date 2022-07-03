@@ -2,7 +2,7 @@
     border-radius: 15px;
   }
   .ant-modal-body {
-    padding: 20px 0 20px 0;
+    padding: 20px 0 0px 0;
   }
 .location {
   font-size: 35px;
@@ -26,6 +26,7 @@
   align-items: center;
   margin: 0 0 0 40px;
   width: 100%;
+  padding-bottom: 20px;
 }
 /* .current {
   display: flex;
@@ -83,6 +84,9 @@
   font-size: 16px;
 }
 .modalTable tbody td{
-  padding: 10px 10px 10px 30px;
+  padding: 15px 10px 15px 30px;
   font-size: 16px;
+}
+.space {
+  padding-bottom: 50px;
 }
