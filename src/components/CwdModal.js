@@ -2,35 +2,16 @@ import { Modal, Table } from 'antd';
 import { AppContext } from './CardBox';
 import { useState, useEffect } from 'react';
 import './CwdModal.css';
-import { ReactComponent as Cloudy } from '../images/day-cloudy.svg';
-import { ReactComponent as CloudyFog } from '../images/day-cloudy-fog.svg';
-import { ReactComponent as Fog } from '../images/day-fog.svg';
-import { ReactComponent as Thunderstorm } from '../images/day-thunderstorm.svg';
 import { ReactComponent as AirFlow } from '../images/airFlow.svg';
 import { ReactComponent as Rain } from '../images/rain.svg';
-import { ReactComponent as Clear } from '../images/day-clear.svg';
-import { ReactComponent as ClearWithRain } from '../images/day-partially-clear-with-rain.svg';
-import { ReactComponent as NightClear } from '../images/night-clear.svg';
-import { ReactComponent as NightCloudy } from '../images/night-cloudy.svg';
-import { ReactComponent as NightCloudyFog } from '../images/night-cloudy-fog.svg';
-import { ReactComponent as NightFog } from '../images/night-fog.svg';
-import { ReactComponent as NightThunderstorm } from '../images/night-thunderstorm.svg';
-import { ReactComponent as NightClearWithRain } from '../images/night-partially-clear-with-rain.svg';
+import WeatherIcon from './WeatherIcon';
 
 const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
 
 function CwbModel(props) {
+  const { cityName, weather } = props;
+  const [rain, setRain] = useState();
   const [cityWeather, setCityWeather] = useState([]);
-  const { cityName } = props;
-
-  const dayList = {
-    time: '',
-    weather: '',
-    rain: '',
-    min: '',
-    max: '',
-    info: '',
-  };
   //表格標題
   const columns = [
     {
@@ -81,9 +62,11 @@ function CwbModel(props) {
       .then((response) => response.json())
       .then((data) => {
         const list = data.records.location;
+
         // 表格內容
         //今天白天
         const tbodyData = list.map((v, i) => {
+          setRain(v.weatherElement[1].time[0].parameter.parameterName);
           return {
             key: 0,
             time: '今天白天',
@@ -144,8 +127,8 @@ function CwbModel(props) {
             <p className="description">{value.weather}</p>
 
             <div className="currentWeather">
-              {value.temp === '無數據' ? (
-                <div className="temperature">?</div>
+              {value.temp === '儀器故障' ? (
+                <div className="temperature">故障</div>
               ) : (
                 <div className="temperature">
                   {value.temp}
@@ -160,12 +143,12 @@ function CwbModel(props) {
                   </div>
                   <div className="flexBox">
                     <Rain className="rainIcon" />
-                    <p className="windAndRain">87%</p>
+                    <p className="windAndRain">{rain}%</p>
                   </div>
                 </div>
               </div>
             </div>
-            <CloudyFog className="bigIcon" />
+            <WeatherIcon weather={weather} cityName={cityName} />
 
             <Table
               columns={columns}

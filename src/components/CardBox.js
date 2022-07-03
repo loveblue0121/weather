@@ -67,15 +67,15 @@ function CardBox() {
             time: moment(v.time.obsTime).format('YYYY/MM/DD HH:mm'),
             weather:
               v.weatherElement[20].elementValue === '-99'
-                ? '無數據'
+                ? '儀器故障'
                 : v.weatherElement[20].elementValue,
             temperature:
               v.weatherElement[3].elementValue === '-99'
-                ? '無數據'
+                ? '儀器故障'
                 : Math.round(v.weatherElement[3].elementValue),
             windy:
               v.weatherElement[2].elementValue === '-99'
-                ? '無數據'
+                ? '儀器故障'
                 : Math.round(v.weatherElement[2].elementValue) / 10 + 'm/h',
           };
         });
@@ -237,7 +237,7 @@ function CardBox() {
           weather: weather,
         }}
       >
-        <CwbModal cityName={cityName} />
+        <CwbModal cityName={cityName} weather={weather} />
       </AppContext.Provider>
     </>
   );
