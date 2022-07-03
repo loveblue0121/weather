@@ -1,0 +1,74 @@
+.box {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+.card {
+  border-radius: 10px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  position: relative;
+  top: 130px;
+  padding-bottom: 20px;
+}
+.top {
+  margin: 10px 0 10px 10px;
+  display: flex;
+  justify-content: space-between;
+  margin: 25px 20px 0px 30px;
+
+}
+.titleName {
+  color: #1e89b9;
+  font-size: xx-large;
+  font-weight: bold;
+}
+.btnStyle {
+  border-radius: 20px;
+  width: 140px;
+  background: #67c6f0;
+  border: 0;
+  font-size: 17px;
+  color: #FFFFFF;
+  margin-right: 30px;
+  margin-top: 15px;
+}
+.btnStyle a{
+  color: #FFFFFF;
+}
+.table {
+  padding: 0;
+  margin: 0;
+}
+thead th{
+  background: #dcf2f8 !important;
+  border-bottom: 2px solid #d6e9f2 !important;
+  color: #61b3d6 !important;
+  font-size: 18px;
+  font-weight: bold !important;
+  width: 5px;
+}
+tbody {
+  font-size: 16px;
+}
+.fileIcon {
+  font-size: 25px;
+  color: #349cca;
+}
+.tooltip {
+  position: relative;
+  display: flex;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  padding: 0 0 0 25px;
+  color: #1e89b9;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+

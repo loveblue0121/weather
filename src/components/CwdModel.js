@@ -1,5 +1,5 @@
 import { Modal, Table } from 'antd';
-import { AppContext } from '../App';
+import { AppContext } from './CardBox';
 import { useState, useEffect } from 'react';
 import './CwdModel.css';
 import { ReactComponent as Cloudy } from '../images/day-cloudy.svg';
@@ -19,8 +19,18 @@ import { ReactComponent as NightClearWithRain } from '../images/night-partially-
 
 const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
 
-function CwbModel() {
+function CwbModel(props) {
   const [cityWeather, setCityWeather] = useState([]);
+  const { cityName } = props;
+
+  const dayList = {
+    time: '',
+    weather: '',
+    rain: '',
+    min: '',
+    max: '',
+    info: '',
+  };
   //表格標題
   const columns = [
     {
@@ -62,30 +72,56 @@ function CwbModel() {
       key: 'info',
     },
   ];
+
   // API
   useEffect(() => {
     fetch(
-      `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=${AUTHORIZATION_KEY}&locationName=%E9%AB%98%E9%9B%84%E5%B8%82`
+      `https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=${AUTHORIZATION_KEY}&locationName=${cityName}`
     )
       .then((response) => response.json())
       .then((data) => {
         const list = data.records.location;
-        setCityWeather(list);
+        // 表格內容
+        //今天白天
+        const tbodyData = list.map((v, i) => {
+          return {
+            key: 0,
+            time: '今天白天',
+            weather: v.weatherElement[0].time[0].parameter.parameterName,
+            rain: v.weatherElement[1].time[0].parameter.parameterName + '%',
+            min: v.weatherElement[2].time[0].parameter.parameterName,
+            max: v.weatherElement[4].time[0].parameter.parameterName,
+            info: v.weatherElement[3].time[0].parameter.parameterName,
+          };
+        });
+        //今天晚上
+        const todayNight = list.map((v, i) => {
+          return {
+            key: 1,
+            time: '今天晚上',
+            weather: v.weatherElement[0].time[1].parameter.parameterName,
+            rain: v.weatherElement[1].time[1].parameter.parameterName + '%',
+            min: v.weatherElement[2].time[1].parameter.parameterName,
+            max: v.weatherElement[4].time[1].parameter.parameterName,
+            info: v.weatherElement[3].time[1].parameter.parameterName,
+          };
+        });
+        //明天白天
+        const tomorrow = list.map((v, i) => {
+          return {
+            key: 2,
+            time: '明天白天',
+            weather: v.weatherElement[0].time[2].parameter.parameterName,
+            rain: v.weatherElement[1].time[2].parameter.parameterName + '%',
+            min: v.weatherElement[2].time[2].parameter.parameterName,
+            max: v.weatherElement[4].time[2].parameter.parameterName,
+            info: v.weatherElement[3].time[2].parameter.parameterName,
+          };
+        });
+        const tbody = tbodyData.concat(todayNight, tomorrow);
+        setCityWeather(tbody);
       });
-  }, []);
-
-  // 表格內容
-  const tbodyData = cityWeather.map((v, i) => {
-    return {
-      key: i,
-      time: '今天白天',
-      weather: v.weatherElement[0].time[0].parameter.parameterName,
-      rain: v.weatherElement[1].time[0].parameter.parameterName + '%',
-      min: v.weatherElement[2].time[0].parameter.parameterName,
-      max: v.weatherElement[4].time[0].parameter.parameterName,
-      info: v.weatherElement[3].time[0].parameter.parameterName,
-    };
-  });
+  }, [props]);
 
   return (
     <>
@@ -98,6 +134,7 @@ function CwbModel() {
             width={900}
             footer={null}
             className="weatherCard"
+            maskTransitionName=""
           >
             <div className="location">
               <p>{value.city}</p>
@@ -132,7 +169,7 @@ function CwbModel() {
 
             <Table
               columns={columns}
-              dataSource={tbodyData}
+              dataSource={cityWeather}
               pagination={false}
               className="modalTable"
             />
