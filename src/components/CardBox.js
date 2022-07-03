@@ -9,7 +9,7 @@ import {
 import moment from 'moment';
 import React, { createContext } from 'react';
 import { CSVLink, CSVDownload } from 'react-csv';
-import CwbModel from './CwdModel';
+import CwbModal from './CwdModal';
 
 export const AppContext = createContext();
 const AUTHORIZATION_KEY = process.env.REACT_APP_AUTHORIZATION_KEY;
@@ -237,7 +237,7 @@ function CardBox() {
           weather: weather,
         }}
       >
-        <CwbModel cityName={cityName} />
+        <CwbModal cityName={cityName} />
       </AppContext.Provider>
     </>
   );

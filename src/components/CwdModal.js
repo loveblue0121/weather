@@ -1,7 +1,7 @@
 import { Modal, Table } from 'antd';
 import { AppContext } from './CardBox';
 import { useState, useEffect } from 'react';
-import './CwdModel.css';
+import './CwdModal.css';
 import { ReactComponent as Cloudy } from '../images/day-cloudy.svg';
 import { ReactComponent as CloudyFog } from '../images/day-cloudy-fog.svg';
 import { ReactComponent as Fog } from '../images/day-fog.svg';
