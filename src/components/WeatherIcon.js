@@ -40,8 +40,9 @@ function WeatherIcon(props) {
   const today = moment(new Date()).format('YYYY-MM-DD');
   const dayadd = moment(new Date(), 'YYYY-MM-DD').add(2, 'days');
   const dayAfterTomorrow = moment(dayadd).format('YYYY-MM-DD');
-  const nowTime = moment(new Date()).format('HH:mm');
+  const nowTime = moment(new Date()).format('YYYY-MM-DD HH:mm');
   const [time, setTime] = useState({});
+  const [tomorrow, setTomorrow] = useState({});
 
   // 日出日沒API
   useEffect(() => {
@@ -50,7 +51,9 @@ function WeatherIcon(props) {
     )
       .then((response) => response.json())
       .then((data) => {
-        // const dataList = data.records.locations.location[0].time[0].parameter;
+        // const dataList = data.records.locations.location;
+        const tomorrow = data.records.locations.location[0].time[1];
+        const date = data.records.locations.location[0].time[0];
         const day =
           data.records.locations.location[0].time[0].parameter[1]
             .parameterValue;
@@ -58,59 +61,69 @@ function WeatherIcon(props) {
           data.records.locations.location[0].time[0].parameter[5]
             .parameterValue;
 
-        const timeRange = {
-          day: day,
-          night: night,
+        const todayTimeRange = {
+          date: date.dataTime,
+          day: date.dataTime + ' ' + day,
+          night: date.dataTime + ' ' + night,
         };
-        setTime(timeRange);
+        const tomorrowTimeRange = {
+          date: tomorrow.dataTime,
+          day: tomorrow.dataTime + ' ' + day,
+          night: tomorrow.dataTime + ' ' + night,
+        };
+        setTime(todayTimeRange);
+        setTomorrow(tomorrowTimeRange);
       });
   }, [props]);
-
   // 設定要顯示的icon
   var icon;
+  const range = moment(nowTime).isBetween(time.night, tomorrow.day); // 設定今晚日落到明早日出前的時段
 
-  if (weather === '晴' && nowTime <= time.night) {
+  if (weather === '晴' && !range) {
     //晴天白天
     icon = weatherIcons.day.isClear;
-  } else if (weather === '晴' && nowTime >= time.night) {
+  } else if (weather === '晴' && range) {
     //晴天晚上
     icon = weatherIcons.night.isClear;
-  } else if (weather === '陰' && nowTime <= time.night) {
+  } else if ((weather === '陰' || weather === '多雲') && !range) {
     //陰天白天
-    icon = weatherIcons.day.isCloudy;
-  } else if (weather === '陰' && nowTime >= time.night) {
-    //陰天晚上
-    icon = weatherIcons.night.isCloudy;
-  } else if (weather === '陰有霾' && nowTime <= time.night) {
-    //陰有霾白天
-    icon = weatherIcons.day.isCloudyFog;
-  } else if (weather === '陰有霾' && nowTime >= time.night) {
-    //陰有霾晚上
-    icon = weatherIcons.night.isCloudyFog;
-  } else if (weather === '多雲' && nowTime <= time.night) {
     //多雲白天 (沒有多雲圖片故用陰天圖片代替)
+
     icon = weatherIcons.day.isCloudy;
-  } else if (weather === '多雲' && nowTime >= time.night) {
+  } else if ((weather === '陰' || weather === '多雲') && range) {
+    //陰天晚上
     //多雲晚上 (沒有多雲圖片故用陰天圖片代替)
     icon = weatherIcons.night.isCloudy;
-  } else if (weather === '晴有雨' && nowTime <= time.night) {
+  } else if ((weather === '陰有靄' || weather === '陰有霾') && !range) {
+    //陰有霾有靄白天
+    icon = weatherIcons.day.isCloudyFog;
+  } else if ((weather === '陰有靄' || weather === '陰有霾') && range) {
+    //陰有霾有靄晚上
+    icon = weatherIcons.night.isCloudyFog;
+  } else if ((weather === '晴有雨' || weather === '陰有雨') && !range) {
     //晴有雨白天
     icon = weatherIcons.day.isPartiallyClearWithRain;
-  } else if (weather === '晴有雨' && nowTime >= time.night) {
+  } else if ((weather === '晴有雨' || weather === '陰有雨') && range) {
     //晴有雨晚上
     icon = weatherIcons.night.isPartiallyClearWithRain;
-  } else if (weather === '陰有雨' && nowTime <= time.night) {
-    //陰有雨白天 (沒有陰有雨圖片故用情有雨代替)
-    icon = weatherIcons.day.isPartiallyClearWithRain;
-  } else if (weather === '陰有雨' && nowTime >= time.night) {
-    //陰有雨晚上 (沒有陰有雨圖片故用情有雨代替)
-    icon = weatherIcons.night.isPartiallyClearWithRain;
-  } else if (weather === '晴有霾' && nowTime <= time.night) {
-    //晴有霾白天
+  } else if ((weather === '晴有靄' || weather === '晴有霾') && !range) {
+    //晴有靄有霾白天
     icon = weatherIcons.day.isFog;
-  } else if (weather === '晴有霾' && nowTime >= time.night) {
-    //晴有霾晚上
+  } else if ((weather === '晴有靄' || weather === '晴有霾') && range) {
+    //晴有靄有霾晚上
     icon = weatherIcons.night.isFog;
+  } else if (weather === '有雷' && !range) {
+    //有雷白天
+    icon = weatherIcons.day.isThunderstorm;
+  } else if (weather === '有雷' && range) {
+    //有雷晚上
+    icon = weatherIcons.night.isThunderstorm;
+  } else if ((weather === '多雲有霾' || weather === '多雲有靄') && !range) {
+    //多雲有霾多雲有靄白天
+    icon = weatherIcons.day.isCloudyFog;
+  } else if ((weather === '多雲有霾' || weather === '多雲有靄') && range) {
+    //多雲有霾多雲有靄晚上
+    icon = weatherIcons.night.isCloudyFog;
   }
 
   return (

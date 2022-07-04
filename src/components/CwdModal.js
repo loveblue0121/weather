@@ -128,7 +128,7 @@ function CwbModel(props) {
 
             <div className="currentWeather">
               {value.temp === '儀器故障' ? (
-                <div className="temperature">故障</div>
+                <div className="temperatureError">故障</div>
               ) : (
                 <div className="temperature">
                   {value.temp}

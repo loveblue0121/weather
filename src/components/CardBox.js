@@ -66,17 +66,17 @@ function CardBox() {
             town: v.parameter[2].parameterValue,
             time: moment(v.time.obsTime).format('YYYY/MM/DD HH:mm'),
             weather:
-              v.weatherElement[20].elementValue === '-99'
+              v.weatherElement[21].elementValue === '-99'
                 ? '儀器故障'
-                : v.weatherElement[20].elementValue,
+                : v.weatherElement[21].elementValue,
             temperature:
+              v.weatherElement[4].elementValue === '-99'
+                ? '儀器故障'
+                : Math.round(v.weatherElement[4].elementValue),
+            windy:
               v.weatherElement[3].elementValue === '-99'
                 ? '儀器故障'
-                : Math.round(v.weatherElement[3].elementValue),
-            windy:
-              v.weatherElement[2].elementValue === '-99'
-                ? '儀器故障'
-                : Math.round(v.weatherElement[2].elementValue) / 10 + 'm/h',
+                : Math.round(v.weatherElement[3].elementValue) / 10 + 'm/h',
           };
         });
         setDataList(lastData);
@@ -133,7 +133,7 @@ function CardBox() {
                 setwind(dataList[record?.key].windy);
                 setWeather(dataList[record?.key].weather);
                 setCityName(dataList[record?.key].name);
-                console.log('record:', record);
+                // console.log('record:', record);
               }}
             >
               <ProfileOutlined className="fileIcon" />
@@ -156,14 +156,14 @@ function CardBox() {
 
   //CheckBox
   const onChange = (filters, sorter, extra) => {
-    console.log('params', filters, sorter, extra);
+    // console.log('params', filters, sorter, extra);
   };
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setIsSelect(true);
       setSelectData(selectedRows);
-      console.log('選擇的index:', selectedRows);
+      // console.log('選擇的index:', selectedRows);
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === 'Disabled User',
